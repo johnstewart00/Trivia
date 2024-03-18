@@ -24,7 +24,6 @@ export default function Home() {
 
   async function startGame() {
     await setAllQuestions();
-    console.log("questions: ", questions);
     setStarted(true);
   }
   async function setAllQuestions() {
@@ -50,7 +49,6 @@ export default function Home() {
   }
 
   const getQuestions = () => {
-    console.log("Category is: " + category);
     return new Promise((resolve, reject) => {
       $.ajax({
         method: "GET",
