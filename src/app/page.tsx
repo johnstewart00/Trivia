@@ -15,6 +15,7 @@ import { Paragraph } from "./components/Paragraph";
 import Register from "./components/Register";
 import Header from "./components/Header";
 import { Login } from "./components/Login";
+import { FilterAnswers, FilterString, shuffle } from "./misc/FilterStrings";
 
 export default function Home() {
   const [category, setCategory] = useState<number | undefined>(); // Adjust the type here
@@ -35,20 +36,20 @@ export default function Home() {
     setStarted(true);
   }
   async function setAllQuestions() {
-    let data: any = await getQuestions();
+    let data: any = await getData();
     let tempQuestions = [];
-    let possibleAnswers: any = [];
+    let possibleAnswers = [];
     let correctAnswers = [];
     for (let i = 0; i < 5; i++) {
-      let tempQuestion: any = data.results[i].question;
-      tempQuestion = filterString(tempQuestion);
+      let tempQuestion = data.results[i].question;
+      tempQuestion = FilterString(tempQuestion);
       tempQuestions.push(tempQuestion);
-      var tempPossibleAnswers = [...data.results[i].incorrect_answers]; // Create a copy
+      var tempPossibleAnswers = [...data.results[i].incorrect_answers];
       var correctAnswer = data.results[i].correct_answer;
       tempPossibleAnswers.push(correctAnswer);
-      tempPossibleAnswers = filterAnswers(tempPossibleAnswers);
+      tempPossibleAnswers = FilterAnswers(tempPossibleAnswers);
       tempPossibleAnswers = shuffle(tempPossibleAnswers);
-      possibleAnswers.push(tempPossibleAnswers); // Push the modified copy
+      possibleAnswers.push(tempPossibleAnswers);
       correctAnswers.push(correctAnswer);
     }
     setQuestions(tempQuestions);
@@ -56,7 +57,7 @@ export default function Home() {
     setCorrectAnswer(correctAnswers);
   }
 
-  const getQuestions = () => {
+  const getData = () => {
     return new Promise((resolve, reject) => {
       $.ajax({
         method: "GET",
@@ -71,39 +72,13 @@ export default function Home() {
     });
   };
   const setSubject = (cat: number) => {
-    setCategory(cat); // Updating context value using a setter function
+    setCategory(cat);
     setSelectedCategory(cat);
   };
-  function shuffle(array: string[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-  const filterString = (str: string) => {
-    str = str.replace(/&#039;/g, "'");
-    str = str.replace(/&quot;/g, '"');
-    str = str.replace(/&shy;/g, "-");
-    str = str.replace(/&amp;/g, "&");
-    str = str.replace(/&ouml;/g, "Ö");
-    str = str.replace(/&auml;/g, "ä");
-    str = str.replace(/&aring;/g, "Ä");
-    str = str.replace(/&.*?;/g, ""); // this should just delete anything else
-    return str;
-  };
-  const filterAnswers = (answers: any) => {
-    for (let i = 0; i < answers.length; i++) {
-      answers[i] = filterString(answers[i]);
-    }
-    return answers;
-  };
+
   const restartGame = () => {
     setStarted(false);
     setSelectedCategory(undefined);
-  };
-  const register = () => {
-    setShowRegister(true);
   };
 
   const handleLogOut = () => {
@@ -135,7 +110,7 @@ export default function Home() {
             <Header handleLogOut={handleLogOut} />
             <Spacer size={SpacerSizes.large} />
             <CenterPage>
-              <Banner />
+              <Banner /> {/* update this to not look ancient */}
               {started ? (
                 <Game
                   questions={questions}
@@ -229,7 +204,9 @@ export default function Home() {
                       setPassword={setPassword}
                       setLoggedIn={setLoggedIn}
                     />
-                    <MuiButton onClick={register}>Register Here</MuiButton>
+                    <MuiButton onClick={() => setShowRegister(true)}>
+                      Register Here
+                    </MuiButton>
                     <MuiButton onClick={() => setLoggedIn(true)}>
                       Continue as guest
                     </MuiButton>
