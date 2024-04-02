@@ -1,7 +1,7 @@
 "use client";
 
 import { MuiBox } from "./components/Box";
-import backgroundTriviaImage from "../../public/TriviaGameBackground.jpeg";
+import backgroundTriviaImage from "../../public/CloudyBlue.jpg";
 import Image from "next/image";
 import Spacer, { SpacerSizes } from "./components/Spacer";
 import { MuiButton } from "./components/MuiButton";
@@ -11,6 +11,10 @@ import $ from "jquery";
 import { useState } from "react";
 import Game from "./components/Game";
 import { Color } from "./styles/colors";
+import { Paragraph } from "./components/Paragraph";
+import Register from "./components/Register";
+import Header from "./components/Header";
+import { Login } from "./components/Login";
 
 export default function Home() {
   const [category, setCategory] = useState<number | undefined>(); // Adjust the type here
@@ -21,6 +25,10 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<
     number | undefined
   >();
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [showRegister, setShowRegister] = useState<boolean>(false);
+  const [password, setPassword] = useState<string | undefined>();
+  const [username, setUsername] = useState<string | undefined>();
 
   async function startGame() {
     await setAllQuestions();
@@ -66,7 +74,7 @@ export default function Home() {
     setCategory(cat); // Updating context value using a setter function
     setSelectedCategory(cat);
   };
-  function shuffle(array: any) {
+  function shuffle(array: string[]) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
@@ -94,82 +102,144 @@ export default function Home() {
     setStarted(false);
     setSelectedCategory(undefined);
   };
+  const register = () => {
+    setShowRegister(true);
+  };
+
+  const handleLogOut = () => {
+    setLoggedIn(false);
+    setQuestions([]);
+    setSelectedCategory(undefined);
+    setCategory(undefined);
+    setShowRegister(false);
+    setStarted(false);
+  };
   return (
     <div>
-      <div style={{ position: "absolute", width: "100%", height: "100vh" }}>
-        <Image
-          src={backgroundTriviaImage}
-          alt="backgroundTriviaImage"
-          layout="fill"
-          objectFit="cover"
-          quality={100}
-        />
-        <div
-          style={{
-            position: "absolute",
-            width: "100%",
-          }}
-        >
-          <Spacer size={SpacerSizes.large} />
-          <CenterPage>
-            <Banner />
-            {started ? (
-              <Game
-                questions={questions}
-                answers={answers}
-                correctAnswer={correctAnswer}
-                restartGame={restartGame}
+      {loggedIn ? (
+        <div style={{ position: "absolute", width: "100%", height: "100vh" }}>
+          <Image
+            src={backgroundTriviaImage}
+            alt="backgroundTriviaImage"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+          />
+
+          <div
+            style={{
+              position: "absolute",
+              width: "100%",
+            }}
+          >
+            <Header handleLogOut={handleLogOut} />
+            <Spacer size={SpacerSizes.large} />
+            <CenterPage>
+              <Banner />
+              {started ? (
+                <Game
+                  questions={questions}
+                  answers={answers}
+                  correctAnswer={correctAnswer}
+                  restartGame={restartGame}
+                />
+              ) : (
+                <div>
+                  <MuiBox>Choose a category</MuiBox>
+                  <MuiButton
+                    onClick={() => setSubject(9)}
+                    background_color={
+                      selectedCategory === 9 ? Color.turquoiseGreen : undefined
+                    }
+                  >
+                    General Knowledge
+                  </MuiButton>
+                  <MuiButton
+                    onClick={() => setSubject(10)}
+                    background_color={
+                      selectedCategory === 10 ? Color.turquoiseGreen : undefined
+                    }
+                  >
+                    Books
+                  </MuiButton>
+                  <MuiButton
+                    onClick={() => setSubject(11)}
+                    background_color={
+                      selectedCategory === 11 ? Color.turquoiseGreen : undefined
+                    }
+                  >
+                    Film
+                  </MuiButton>
+                  <MuiButton
+                    onClick={() => setSubject(12)}
+                    background_color={
+                      selectedCategory === 12 ? Color.turquoiseGreen : undefined
+                    }
+                  >
+                    Music
+                  </MuiButton>
+                  <MuiButton
+                    onClick={() => setSubject(20)}
+                    background_color={
+                      selectedCategory === 20 ? Color.turquoiseGreen : undefined
+                    }
+                  >
+                    Mythology
+                  </MuiButton>
+                  <Spacer size={SpacerSizes.medium} />
+                  <MuiButton onClick={startGame}>Start</MuiButton>
+                </div>
+              )}
+            </CenterPage>
+          </div>
+        </div>
+      ) : (
+        <div style={{ position: "absolute", width: "100%", height: "100vh" }}>
+          <Image
+            src={backgroundTriviaImage}
+            alt="backgroundTriviaImage"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+          />
+          <div
+            style={{
+              position: "absolute",
+              width: "100%",
+            }}
+          >
+            {showRegister ? (
+              <Register
+                setLoggedIn={setLoggedIn}
+                setShowRegister={setShowRegister}
               />
             ) : (
               <div>
-                <MuiBox>Choose a category</MuiBox>
-                <MuiButton
-                  onClick={() => setSubject(9)}
-                  background_color={
-                    selectedCategory === 9 ? Color.turquoiseGreen : undefined
-                  }
-                >
-                  General Knowledge
-                </MuiButton>
-                <MuiButton
-                  onClick={() => setSubject(10)}
-                  background_color={
-                    selectedCategory === 10 ? Color.turquoiseGreen : undefined
-                  }
-                >
-                  Books
-                </MuiButton>
-                <MuiButton
-                  onClick={() => setSubject(11)}
-                  background_color={
-                    selectedCategory === 11 ? Color.turquoiseGreen : undefined
-                  }
-                >
-                  Film
-                </MuiButton>
-                <MuiButton
-                  onClick={() => setSubject(12)}
-                  background_color={
-                    selectedCategory === 12 ? Color.turquoiseGreen : undefined
-                  }
-                >
-                  Music
-                </MuiButton>
-                <MuiButton
-                  onClick={() => setSubject(20)}
-                  background_color={
-                    selectedCategory === 20 ? Color.turquoiseGreen : undefined
-                  }
-                >
-                  Mythology
-                </MuiButton>
-                <Spacer size={SpacerSizes.medium} />
-                <MuiButton onClick={startGame}>Start</MuiButton>
+                <Spacer size={SpacerSizes.large} />
+                <CenterPage>
+                  <MuiBox>
+                    <Paragraph>
+                      Welcome to trivia, please sign in or play as a guest
+                    </Paragraph>
+                    <Spacer size={SpacerSizes.medium} />
+                    <Login
+                      username={username}
+                      setUsername={setUsername}
+                      password={password}
+                      setPassword={setPassword}
+                      setLoggedIn={setLoggedIn}
+                    />
+                    <MuiButton onClick={register}>Register Here</MuiButton>
+                    <MuiButton onClick={() => setLoggedIn(true)}>
+                      Continue as guest
+                    </MuiButton>
+                  </MuiBox>
+                </CenterPage>
               </div>
             )}
-          </CenterPage>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

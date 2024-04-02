@@ -11,4 +11,6 @@ export const MuiBox = styled("div")<{ width?: string; color?: string }>`
   border-radius: 20px;
   background-color: ${(props) => props.color || Color.lightOrange};
   width: ${(props) => props.width || "500px"};
+  display: "flex";
+  flex-direction: "column";
 `;
